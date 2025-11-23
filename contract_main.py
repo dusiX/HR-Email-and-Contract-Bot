@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QFormLayout, QPushButton, QApplication, QComboBox, QLineEdit, QDialog
 import win32com.client as win32
-import sys, time
+import sys, time, os
 
 # Path to the Excel macro-enabled workbook responsible for generating contracts
 # NOTE: Replace {Username} with an actual user or load dynamically from config.
@@ -152,11 +152,20 @@ class contract_main(QDialog):
         # Get the first (newly generated) Word document
         doc = word.Documents(1)
 
-        # Copy full contract content to clipboard
-        doc.Content.Copy()
+        # Define the path for saving PDF
+        pdf_folder = r"C:\Users\{Username}\Documents\Contracts"
+        os.makedirs(pdf_folder, exist_ok=True)
 
-        # Disable Word alerts before closing
-        word.DisplayAlerts = 0
+        # Use the employee name to create the filename
+        employee_name = self.employee_name_input.text().replace(" ", "_")  # ex. John_Doe
+        pdf_path = os.path.join(pdf_folder, f"{employee_name}.pdf")
+
+        # Export Word document as PDF
+        doc.ExportAsFixedFormat(OutputFileName=pdf_path,
+                        ExportFormat=17,  # 17 = wdExportFormatPDF
+                        OpenAfterExport=False,
+                        OptimizeFor=0,    # 0 = wdExportOptimizeForPrint
+                        CreateBookmarks=1)  # 1 = wdExportCreateHeadingBookmarks
 
         # Close without saving (macro already produced final output)
         doc.Close(SaveChanges=False)

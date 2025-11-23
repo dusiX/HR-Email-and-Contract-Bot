@@ -26,6 +26,7 @@ The repository provides automation for several HR workflows:
 
    * Prepares employment contracts using Excel macros
    * Automatically fills Word documents with the provided employee data
+   * Generates contract in PDF
 
 4. **GUI Forms:**
 
